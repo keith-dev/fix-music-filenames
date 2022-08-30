@@ -1,7 +1,7 @@
 PROG.fix-music-filenames   = fix-music-filenames
 DEPENDS.fix-music-filenames= fix-music-filenames.depends
 REPORT.fix-music-filenames = fix-music-filenames.report
-SRCS.fix-music-filenames   = main.cc
+SRCS.fix-music-filenames   = main.cc scheme.cc
 PROGS_CXX                  = $(PROG.fix-music-filenames)
 
 PREFIX   ?= ${HOME}

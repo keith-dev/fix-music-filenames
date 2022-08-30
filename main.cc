@@ -1,17 +1,21 @@
+#include "scheme.hpp"
+
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <fts.h>
 
 #include <spdlog/spdlog.h>
 
-#include <string_view>
+#include <stdexcept>
 #include <string>
+#include <string_view>
 #include <vector>
 
 //----------------------------------------------------------------------------
 //
 
 using path_type = std::vector<std::string>;
+
 class Ctx {
 public:
 	void onDir(long level, std::string_view name);
@@ -24,7 +28,8 @@ private:
 };
 
 void scan(Ctx& ctx, char* path_argv[]) {
-	if (auto* fs = fts_open(path_argv, FTS_COMFOLLOW | FTS_NOCHDIR | FTS_PHYSICAL | FTS_XDEV, nullptr)) {
+	auto flags = FTS_COMFOLLOW | FTS_NOCHDIR | FTS_PHYSICAL | FTS_XDEV;
+	if (auto* fs = fts_open(path_argv, flags, nullptr)) {
 		while (auto* node = fts_read(fs)) {
 			switch (node->fts_info) {
 			case FTS_F:
@@ -45,9 +50,13 @@ void Ctx::onFile(long level, std::string_view name) {
 	static auto last_path = path;
 	if (last_path != path) {
 		last_path = path;
-		spdlog::info("level={} path={}", level, path_to_string());
+//		spdlog::info("level={} path={}", level, path_to_string());
 	}
-	spdlog::info("file: {}{}", std::string(2*static_cast<std::size_t>(level), '-'), name);
+//	spdlog::info("file: {}{}", std::string(2*static_cast<std::size_t>(level), '-'), name);
+	auto scheme = Scheme::create(name);
+	if (!scheme) {
+		throw std::domain_error{fmt::format("unknown format: {}", name)};
+	}
 }
 
 void Ctx::onDir(long level, std::string_view name) {
@@ -73,8 +82,12 @@ std::string Ctx::path_to_string() const {
 	return fullpath;
 }
 
-int main(int argc, char* argv[]) {
+int main(int argc, char* argv[])
+try {
 	spdlog::default_logger().get()->set_level(spdlog::level::debug);
 	Ctx ctx;
-	scan(ctx, argv);
+	scan(ctx, argv + 1);
+}
+catch (const std::exception& e) {
+	spdlog::error("fatal: {}", e.what());
 }
