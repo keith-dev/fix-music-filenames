@@ -5,79 +5,47 @@
 #include <vector>
 #include <utility>
 
-/*
-#include <spdlog/spdlog.h>
-
-#include <cctype>
-#include <cstring>
-#include <cstdlib>
-#include <fstream>
-#include <memory>
-#include <string_view>
-#include <string>
-#include <vector>
-
-struct Scheme {
-	virtual ~Scheme() = 0;
-	virtual std::string_view name() const = 0;
-	virtual std::string_view artist() const = 0;
-	virtual std::string_view track() const = 0;
-	static std::unique_ptr<Scheme> create(const std::string& name);
-};
-
-struct StudioScheme : public Scheme {
-	std::string artist_, track_, name_;
-	StudioScheme(std::string_view artist, std::string_view track, std::string_view name) :
-		artist_(artist),
-		track_(track),
-		name_(name) {
-	}
-	std::string_view name() const override {
-		return name_;
-	}
-	std::string_view artist() const override {
-		return artist_;
-	}
-	std::string_view track() const override {
-		return track_;
-	}
-};
-
-struct UnnamedScheme : public Scheme {
-	std::string_view name() const override {
-		return "Track";
-	}
-	std::string_view artist() const override {
-		return "Unknown Artist";
-	}
-	std::string_view track() const override {
-		return "01";
-	}
-};
- */
-
 namespace {
-	std::pair<int, std::vector<std::string_view>> n_dashes(std::string_view name) {
-		int count{};
+	// tokenize by " - "
+	// a name may also contain " - ", so we pick out the first 3
+	std::vector<std::string_view> n_dashes(std::string_view name) {
+		static const std::string_view token = " - ";
+		static constexpr std::size_t max_tokens = 3;
 		std::vector<std::string_view> strings;
 
-		if (name.size() < 3) {
-			return {count, strings};
+		if (name.size() < token.size()) {
+			// can't be smaller than " - "
+			return strings;
 		}
-		static const char token[] = { ' ', '-', ' ' };
-		std::size_t start_pos{};
-		std::size_t i;
-		for (i = 0; i < name.size() - 3; ++i) {
-			if (name[i] == token[0] && name[i + 1] == token[1] && name[i + 2] == token[2]) {
-				++count;
+
+		auto match = [](std::string_view token, std::string_view str) -> bool {
+			if (str.size() < token.size()) {
+				return false;
+			}
+			for (std::size_t i = 0; i != token.size(); ++i) {
+				if (str[i] != token[i]) {
+					return false;
+				}
+			}
+			return true;
+		};
+		std::size_t start_pos = 0;
+		std::size_t i = 0;
+		const std::size_t mx = name.size() - token.size();
+		while (i < mx) {
+			if (match(token, {name.data() + i, name.size() - i})) {
 				strings.emplace_back(name.data() + start_pos, i - start_pos);
 				start_pos = i + 3;
-				i += 2;
+				i += 3;
+				if (strings.size() < max_tokens - 1) {
+					continue;
+				}
+				break;
 			}
+			++i;
 		}
-		strings.emplace_back(name.data() + start_pos, i - start_pos);
-
-		return {count, strings};
+		strings.emplace_back(name.data() + start_pos, name.size() - start_pos);
+		return strings;
 	}
 
 	std::string_view strip_extension(std::string_view name) {
@@ -88,10 +56,10 @@ namespace {
 		std::size_t i = name.size();
 		for (i = name.size(); i; --i) {
 			if (name.data()[i - 1] == '/') {
-				return {name.data(), i - 1};
+				return {name.data() + i, i - 1};
 			}
 		}
-		return {name.data(), 0};
+		return name;
 	}
 
 	bool is_numeric(std::string_view str) {
@@ -109,11 +77,10 @@ Scheme::~Scheme() {
 
 std::unique_ptr<Scheme> Scheme::create(std::string_view name) {
 	auto basename = strip_extension(name);
-	auto [nspaces, strings] = n_dashes(basename);
-	switch (nspaces) {
-	case 2:
-		if (strings.size() == 3 &&
-		    !is_numeric(strings[0]) && is_numeric(strings[1]) && !is_numeric(strings[2])) {
+	const auto strings = n_dashes(basename);
+	switch (strings.size()) {
+	case 3:
+		if (!is_numeric(strings[0]) && is_numeric(strings[1]) && !is_numeric(strings[2])) {
 			spdlog::info("studio: {}", name);
 			return std::make_unique<StudioScheme>(strings[0], strings[1], strings[2]);
 		}
@@ -122,29 +89,3 @@ std::unique_ptr<Scheme> Scheme::create(std::string_view name) {
 //	spdlog::warn("cannot determine scheme: {}", name);
 	return {};
 }
-
-/*
-std::vector<std::string> read(const char* name) {
-	std::vector<std::string> lines;
-	std::string line;
-	std::ifstream is(name);
-	while (std::getline(is, line)) {
-		if (const char* p = std::strrchr(line.c_str(), '/')) {
-			lines.emplace_back(p + 1, line.c_str() + line.size() - p - 1);
-		} else {
-			lines.emplace_back(std::move(line));
-		}
-	}
-	return lines;
-}
-
-int main(int argc, char* argv[]) {
-	for (int i = 1; i < argc; ++i) {
-		const auto files{ read(argv[i]) };
-		for (const auto& file : files) {
-			auto scheme = Scheme::create(file);
-			if (!scheme) std::exit(1);
-		}
-	}
-}
- */

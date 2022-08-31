@@ -20,6 +20,7 @@ class Ctx {
 public:
 	void onDir(long level, std::string_view name);
 	void onFile(long level, std::string_view name);
+	bool isFile(std::string_view name);
 	[[nodiscard]] std::string path_to_string() const;
 
 private:
@@ -28,6 +29,11 @@ private:
 };
 
 void scan(Ctx& ctx, char* path_argv[]) {
+	for (int i = 0; path_argv[i]; ++i) {
+		if (ctx.isFile(path_argv[i])) {
+			ctx.onFile(0, path_argv[i]);
+		}
+	}
 	auto flags = FTS_COMFOLLOW | FTS_NOCHDIR | FTS_PHYSICAL | FTS_XDEV;
 	if (auto* fs = fts_open(path_argv, flags, nullptr)) {
 		while (auto* node = fts_read(fs)) {
@@ -50,7 +56,7 @@ void Ctx::onFile(long level, std::string_view name) {
 	static auto last_path = path;
 	if (last_path != path) {
 		last_path = path;
-//		spdlog::info("level={} path={}", level, path_to_string());
+		spdlog::info("level={} path={}", level, path_to_string());
 	}
 //	spdlog::info("file: {}{}", std::string(2*static_cast<std::size_t>(level), '-'), name);
 	auto scheme = Scheme::create(name);
@@ -69,6 +75,12 @@ void Ctx::onDir(long level, std::string_view name) {
 		path.back() = name;
 	} else {
 	}
+}
+
+bool Ctx::isFile(std::string_view name) {
+	struct stat info;
+	int rc = ::stat(name.data(), &info); // assume null terminated after name.size()
+	return (rc == 0) && (info.st_mode & S_IFREG);
 }
 
 std::string Ctx::path_to_string() const {
