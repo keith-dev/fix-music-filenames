@@ -61,26 +61,14 @@ void Ctx::onFile(long level, std::string_view name) {
 //	spdlog::info("file: {}{}", std::string(2*static_cast<std::size_t>(level), '-'), name);
 	auto scheme = Scheme::create(name);
 	if (!scheme) {
-		throw std::domain_error{fmt::format("unknown format: {}", name)};
+//		throw std::domain_error{fmt::format("unknown format: {}", name)};
+		spdlog::error("unknown format: {}", name);
 	}
 }
 
 void Ctx::onDir(long level, std::string_view name) {
-	if (path.empty()) {
-		path.emplace_back(name);
-	} else if (static_cast<std::size_t>(level) == path.size()) {
-		path.emplace_back(name);
-	} else if (static_cast<std::size_t>(level + 1) < path.size()) {
-		path.resize(static_cast<std::size_t>(level + 1));
-		path.back() = name;
-	} else {
-	}
-}
-
-bool Ctx::isFile(std::string_view name) {
-	struct stat info;
-	int rc = ::stat(name.data(), &info); // assume null terminated after name.size()
-	return (rc == 0) && (info.st_mode & S_IFREG);
+	path.resize(level + 1);
+	path.back() = name;
 }
 
 std::string Ctx::path_to_string() const {
@@ -92,6 +80,12 @@ std::string Ctx::path_to_string() const {
 		fullpath += path.back();
 	}
 	return fullpath;
+}
+
+bool Ctx::isFile(std::string_view name) {
+	struct stat info;
+	int rc = ::stat(name.data(), &info); // assume null terminated after name.size()
+	return (rc == 0) && (info.st_mode & S_IFREG);
 }
 
 int main(int argc, char* argv[])

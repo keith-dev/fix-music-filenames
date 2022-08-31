@@ -7,13 +7,10 @@
 
 namespace {
 	// tokenize by " - "
-	std::vector<std::string_view> n_dashes(std::string_view name) {
-		static const std::string_view token = " - ";
-		static constexpr std::size_t max_tokens = 3;
+	std::vector<std::string_view> count_separators(std::string_view name, std::string_view token, std::size_t max_tokens) {
 		std::vector<std::string_view> strings;
 
 		if (name.size() < token.size()) {
-			// can't be smaller than " - "
 			return strings;
 		}
 
@@ -34,8 +31,8 @@ namespace {
 		while (i < mx) {
 			if (match(token, {name.data() + i, name.size() - i})) {
 				strings.emplace_back(name.data() + start_pos, i - start_pos);
-				start_pos = i + 3;
-				i += 3;
+				start_pos = i + token.size();
+				i += token.size();
 				if (strings.size() < max_tokens - 1) {
 					// a name may also contain " - ", so we pick the first 3
 					continue;
@@ -49,6 +46,16 @@ namespace {
 	}
 
 	std::string_view strip_extension(std::string_view name) {
+		std::size_t i;
+		for (i = name.size(); i; --i) {
+			if (name[i - 1] == '.') {
+				return {name.data(), i - 1};
+			}
+		}
+		return name;
+	}
+
+	std::string_view strip_path(std::string_view name) {
 		std::size_t i;
 		for (i = name.size(); i; --i) {
 			if (name[i - 1] == '/') {
@@ -73,15 +80,24 @@ namespace {
 }  // namespace
 
 std::unique_ptr<Scheme> Scheme::create(std::string_view name) {
-	auto basename = strip_extension(name);
-	const auto strings = n_dashes(basename);
-	switch (strings.size()) {
-	case 3:
-		if (!is_numeric(strings[0]) && is_numeric(strings[1]) && !is_numeric(strings[2])) {
+	auto basename = strip_path(name);
+	auto rootname = strip_extension(basename);
+	// StudioScheme
+	{
+		const auto strings = count_separators(rootname, " - ", 3);
+		if (strings.size() == 3 && is_numeric(strings[1])) {
 //			spdlog::info("studio: {}", name);
 			return std::make_unique<StudioScheme>(strings[0], strings[1], strings[2]);
 		}
-		break;
+	}
+	// DefaultScheme
+	{
+		const auto strings = count_separators(rootname, " ", 2);
+//		spdlog::debug("strings.size={} {} {}", strings.size(), strings[0], strings[1]);
+		if (strings.size() == 2 &&
+		    (strings[0] == "Track") && is_numeric(strings[1])) {
+			return std::make_unique<DefaultScheme>(strings[1]);
+		}
 	}
 //	spdlog::warn("cannot determine scheme: {}", name);
 	return {};

@@ -7,6 +7,10 @@ protected:
 	std::string artist_, track_, name_;
 
 public:
+	Scheme(std::string_view track) :
+		track_(track),
+		name_("Track") {
+	}
 	Scheme(std::string_view artist, std::string_view track, std::string_view name) :
 		artist_(artist),
 		track_(track),
@@ -36,8 +40,10 @@ public:
 	}
 };
 
-class UnnamedScheme : public Scheme {
+class DefaultScheme : public Scheme {
 public:
+	DefaultScheme(std::string_view track) : Scheme(track) {
+	}
 	std::string_view name() const override {
 		return "Track";
 	}
