@@ -8,8 +8,8 @@ PREFIX   ?= ${HOME}
 CXXFLAGS += -g -std=c++20 -Wall -Wextra -Wno-unused-parameter -I$(PREFIX)/include
 LDFLAGS  += -L${PREFIX}/lib
 
-INFO      ?= clang-tidy -extra-arg=-std=c++20
-INFOFLAGS ?= -checks='clang-analyzer-*,misc-*,modernize-*,-modernize-use-trailing-return-type,portability-*,readability-* -- $(CXXFLAGS)'
+INFO      ?= clang-tidy
+INFOFLAGS ?= -checks='clang-analyzer-*,misc-*,modernize-*,-modernize-use-trailing-return-type,portability-*,readability-*,-readability-identifier-length'
 
 all: $(DEPENDS.fix-music-filenames) $(PROGS_CXX)
 
@@ -34,7 +34,7 @@ $(REPORT.fix-music-filenames): $(SRCS.fix-music-filenames:.cc=.info)
 	$(COMPILE.cc) -MM $< -o $@
 
 %.info: %.cc
-	$(INFO) $(INFOFLAGS) $< > $@
+	$(INFO) $(INFOFLAGS) $< -- $(CXXFLAGS) > $@
 
 #-- generated inculde file ---
 -include $(DEPENDS.fix-music-filenames)

@@ -20,8 +20,8 @@ class Ctx {
 public:
 	void onDir(long level, std::string_view name);
 	void onFile(long level, std::string_view name);
-	bool isFile(std::string_view name);
 	[[nodiscard]] std::string path_to_string() const;
+	static bool isFile(std::string_view name);
 
 private:
 	path_type path;
@@ -85,18 +85,18 @@ bool Ctx::isFile(std::string_view name) {
 
 std::string Ctx::path_to_string() const {
 	std::string fullpath;
-	if (path.size()) {
+	if (!path.empty()) {
 		for (std::size_t i = 0; i < (path.size() - 1); ++i) {
 			fullpath += path[i] + "/";
 		}
-		fullpath += path[path.size() - 1];
+		fullpath += path.back();
 	}
 	return fullpath;
 }
 
 int main(int argc, char* argv[])
 try {
-	spdlog::default_logger().get()->set_level(spdlog::level::debug);
+	spdlog::default_logger()->set_level(spdlog::level::debug);
 	Ctx ctx;
 	scan(ctx, argv + 1);
 }

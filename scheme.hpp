@@ -12,7 +12,7 @@ public:
 		track_(track),
 		name_(name) {
 	}
-	virtual ~Scheme() = 0;
+	virtual ~Scheme() = default;
 	virtual std::string_view name() const = 0;
 	virtual std::string_view artist() const = 0;
 	virtual std::string_view track() const = 0;
