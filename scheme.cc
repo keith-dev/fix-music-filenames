@@ -82,21 +82,27 @@ namespace {
 std::unique_ptr<Scheme> Scheme::create(std::string_view name) {
 	auto basename = strip_path(name);
 	auto rootname = strip_extension(basename);
+	// DefaultScheme
+	{
+		const auto strings = count_separators(rootname, " ", 2);
+		if (strings.size() == 2 &&
+		    (strings[0] == "Track") && is_numeric(strings[1])) {
+			return std::make_unique<DefaultScheme>(strings[1]);
+		}
+	}
 	// StudioScheme
 	{
 		const auto strings = count_separators(rootname, " - ", 3);
 		if (strings.size() == 3 && is_numeric(strings[1])) {
-//			spdlog::info("studio: {}", name);
 			return std::make_unique<StudioScheme>(strings[0], strings[1], strings[2]);
 		}
 	}
-	// DefaultScheme
+	// ClassicFMScheme
 	{
-		const auto strings = count_separators(rootname, " ", 2);
-//		spdlog::debug("strings.size={} {} {}", strings.size(), strings[0], strings[1]);
-		if (strings.size() == 2 &&
-		    (strings[0] == "Track") && is_numeric(strings[1])) {
-			return std::make_unique<DefaultScheme>(strings[1]);
+		const auto strings = count_separators(rootname, " - ", 4);
+		if (strings.size() == 4 && is_numeric(strings[2])) {
+			std::string_view corrected_artist{ strings[0].data(), strings[0].size() + 3 + strings[1].size() };
+			return std::make_unique<ClassicFMScheme>(corrected_artist, strings[2], strings[2]);
 		}
 	}
 //	spdlog::warn("cannot determine scheme: {}", name);

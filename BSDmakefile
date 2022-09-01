@@ -1,6 +1,6 @@
 PROGS_CXX = fix-music-filenames
 PROG.fix-music-filenames = fix-music-filenames
-SRCS.fix-music-filenames = main.cc scheme.cc
+SRCS.fix-music-filenames = main.cc filesystem.cc scheme.cc
 
 PREFIX ?= ${HOME}
 MK_MAN = no
