@@ -6,7 +6,6 @@
 
 //----------------------------------------------------------------------------
 //
-
 using path_type = std::vector<std::string>;
 
 class FileSystemContext {

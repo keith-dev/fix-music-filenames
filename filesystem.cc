@@ -10,14 +10,13 @@
 
 //----------------------------------------------------------------------------
 //
-
 void FileSystemContext::onFile(long level, std::string_view name) {
 	static auto last_path = path_;
 	if (last_path != path_) {
 		last_path = path_;
 		spdlog::info("level={} path={}", level, path_to_string());
 	}
-//	spdlog::info("file: {}{}", std::string(2*static_cast<std::size_t>(level), '-'), name);
+
 	auto scheme = Scheme::create(name);
 	if (!scheme) {
 //		throw std::domain_error{fmt::format("unknown format: {}", name)};

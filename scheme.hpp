@@ -7,14 +7,12 @@
 //------------------------------------------------------------------------------
 //
 class Scheme {
-protected:
+private:
 	std::string artist_, track_, name_;
 
 public:
 	Scheme(std::string_view artist, std::string_view track, std::string_view name) :
-		artist_(artist),
-		track_(track),
-		name_(name) {
+		artist_(artist), track_(track), name_(name) {
 	}
 	virtual ~Scheme() = default;
 	virtual std::string_view name() const {
@@ -30,6 +28,7 @@ public:
 	static std::unique_ptr<Scheme> create(std::string_view name);
 };
 
+// created by CD mastering, found on CDs going back to the 1980s to present
 class StudioScheme : public Scheme {
 public:
 	StudioScheme(std::string_view artist, std::string_view track, std::string_view name) :
@@ -37,6 +36,7 @@ public:
 	}
 };
 
+// extended StudioScheme found on ClassicFM CDs
 class ClassicFMScheme : public Scheme {
 public:
 	ClassicFMScheme(std::string_view artist, std::string_view track, std::string_view name) :
@@ -44,6 +44,7 @@ public:
 	}
 };
 
+// created be abcde ripper: 01.Happy Birthday.mp3
 class AbcdeScheme : public Scheme {
 public:
 	AbcdeScheme(std::string_view track, std::string_view name) :
@@ -54,6 +55,18 @@ public:
 	}
 };
 
+// created be abcde ripper: 01 Happy Birthday.mp3
+class GenericRipScheme : public Scheme {
+public:
+	GenericRipScheme(std::string_view track, std::string_view name) :
+		Scheme({}, track, name) {
+	}
+	std::string_view artist() const override {
+		return "Unknown Artist";
+	}
+};
+
+// lazy: Track 01.mp3
 class DefaultScheme : public Scheme {
 public:
 	DefaultScheme(std::string_view track) : Scheme({}, track, "Track") {

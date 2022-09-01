@@ -2,12 +2,15 @@
 
 #include <spdlog/spdlog.h>
 
+#include <limits>
 #include <vector>
 #include <utility>
 
 namespace {
 	// tokenize by " - "
-	std::vector<std::string_view> count_separators(std::string_view name, std::string_view token, std::size_t max_tokens) {
+	std::vector<std::string_view>
+	count_separators(std::string_view name, std::string_view token,
+	                 std::size_t max_tokens = std::numeric_limits<std::size_t>::max()) {
 		std::vector<std::string_view> strings;
 
 		if (name.size() < token.size()) {
@@ -34,7 +37,7 @@ namespace {
 				start_pos = i + token.size();
 				i += token.size();
 				if (strings.size() < max_tokens - 1) {
-					// a name may also contain " - ", so we pick the first 3
+					// a name may also contain token, so we pick the first max_tokens
 					continue;
 				}
 				break;
@@ -93,16 +96,16 @@ std::unique_ptr<Scheme> Scheme::create(std::string_view name) {
 	// StudioScheme
 	{
 		const auto strings = count_separators(rootname, " - ", 3);
-		if (strings.size() == 3 && is_numeric(strings[1])) {
+		if (strings.size() == 3 && strings[1].size() == 2 && is_numeric(strings[1])) {
 			return std::make_unique<StudioScheme>(strings[0], strings[1], strings[2]);
 		}
 	}
 	// ClassicFMScheme
 	{
 		const auto strings = count_separators(rootname, " - ", 4);
-		if (strings.size() == 4 && is_numeric(strings[2])) {
-			std::string_view corrected_artist{ strings[0].data(), strings[0].size() + 3 + strings[1].size() };
-			return std::make_unique<ClassicFMScheme>(corrected_artist, strings[2], strings[2]);
+		if (strings.size() == 4 && strings[2].size() == 2 && is_numeric(strings[2])) {
+			std::string_view artist{ strings[0].data(), strings[0].size() + 3 + strings[1].size() };
+			return std::make_unique<ClassicFMScheme>(artist, strings[2], strings[2]);
 		}
 	}
 	// AbcdeScheme
@@ -112,6 +115,18 @@ std::unique_ptr<Scheme> Scheme::create(std::string_view name) {
 			return std::make_unique<AbcdeScheme>(strings[0], strings[1]);
 		}
 	}
-//	spdlog::warn("cannot determine scheme: {}", name);
+	// GenericRipScheme
+	{
+		const auto strings = count_separators(rootname, " ");
+		if (strings.size() > 1 && strings[0].size() == 2 && is_numeric(strings[0])) {
+			std::size_t len{};
+			for (std::size_t i = 1; i != strings.size(); ++i) {
+				len += strings[i].size();
+			}
+			std::string_view name{ strings[0].data(), len };
+			return std::make_unique<GenericRipScheme>(strings[0], name);
+		}
+	}
+	spdlog::debug("cannot determine scheme: {}", name);
 	return {};
 }

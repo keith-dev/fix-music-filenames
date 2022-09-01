@@ -1,7 +1,5 @@
 #include "filesystem.hpp"
 
-//#include <sys/types.h>
-//#include <sys/stat.h>
 #include <fts.h>
 
 #include <spdlog/spdlog.h>
@@ -10,7 +8,6 @@
 
 //----------------------------------------------------------------------------
 //
-
 void scan(FileSystemContext* ctx, char* path_argv[]) {
 	for (int i = 0; path_argv[i]; ++i) {
 		if (ctx->isFile(path_argv[i])) {
