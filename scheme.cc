@@ -105,6 +105,13 @@ std::unique_ptr<Scheme> Scheme::create(std::string_view name) {
 			return std::make_unique<ClassicFMScheme>(corrected_artist, strings[2], strings[2]);
 		}
 	}
+	// AbcdeScheme
+	{
+		const auto strings = count_separators(rootname, ".", 1);
+		if (strings.size() == 2 && is_numeric(strings[0])) {
+			return std::make_unique<AbcdeScheme>(strings[0], strings[1]);
+		}
+	}
 //	spdlog::warn("cannot determine scheme: {}", name);
 	return {};
 }

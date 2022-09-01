@@ -30,13 +30,6 @@ public:
 	static std::unique_ptr<Scheme> create(std::string_view name);
 };
 
-class ClassicFMScheme : public Scheme {
-public:
-	ClassicFMScheme(std::string_view artist, std::string_view track, std::string_view name) :
-		Scheme(artist, track, name) {
-	}
-};
-
 class StudioScheme : public Scheme {
 public:
 	StudioScheme(std::string_view artist, std::string_view track, std::string_view name) :
@@ -44,12 +37,26 @@ public:
 	}
 };
 
+class ClassicFMScheme : public Scheme {
+public:
+	ClassicFMScheme(std::string_view artist, std::string_view track, std::string_view name) :
+		Scheme(artist, track, name) {
+	}
+};
+
+class AbcdeScheme : public Scheme {
+public:
+	AbcdeScheme(std::string_view track, std::string_view name) :
+		Scheme({}, track, name) {
+	}
+	std::string_view artist() const override {
+		return "Unknown Artist";
+	}
+};
+
 class DefaultScheme : public Scheme {
 public:
 	DefaultScheme(std::string_view track) : Scheme({}, track, "Track") {
-	}
-	std::string_view name() const override {
-		return "Track";
 	}
 	std::string_view artist() const override {
 		return "Unknown Artist";
