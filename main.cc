@@ -5,6 +5,7 @@
 #include <spdlog/spdlog.h>
 
 #include <exception>
+#include <memory>
 
 //----------------------------------------------------------------------------
 //
@@ -14,9 +15,11 @@ void scan(FileSystemContext* ctx, char* path_argv[]) {
 			ctx->onFile(0, path_argv[i]);
 		}
 	}
+
 	auto flags = FTS_COMFOLLOW | FTS_NOCHDIR | FTS_PHYSICAL | FTS_XDEV;
-	if (auto* fs = fts_open(path_argv, flags, nullptr)) {
-		while (auto* node = fts_read(fs)) {
+	std::unique_ptr<FTS, decltype(&::fts_close)> fs{ fts_open(path_argv, flags, nullptr), fts_close };
+	if (fs) {
+		while (auto* node = fts_read(fs.get())) {
 			switch (node->fts_info) {
 			case FTS_F:
 				ctx->onFile(node->fts_level, {node->fts_name, node->fts_namelen});
@@ -28,11 +31,10 @@ void scan(FileSystemContext* ctx, char* path_argv[]) {
 				;
 			}
 		}
-		fts_close(fs);
 	}
 }
 
-int main(int argc, char* argv[])
+int main(int /*argc*/, char* argv[])
 try {
 	spdlog::default_logger()->set_level(spdlog::level::debug);
 	auto ctx = std::make_unique<FileSystemContext>();
