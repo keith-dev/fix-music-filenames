@@ -4,7 +4,7 @@
 #include <string>
 #include <string_view>
 
-//------------------------------------------------------------------------------
+//----------------------------------------------------------------------------
 //
 class Scheme {
 private:
@@ -24,7 +24,6 @@ public:
 	virtual std::string_view track() const {
 		return track_;
 	}
-
 	static std::unique_ptr<Scheme> create(std::string_view name);
 };
 
@@ -35,6 +34,7 @@ public:
 	StudioScheme(std::string_view artist, std::string_view track, std::string_view name) :
 		Scheme(artist, track, name) {
 	}
+	static std::unique_ptr<Scheme> create(std::string_view rootname);
 };
 
 // found on recent online CD purchases
@@ -44,6 +44,7 @@ public:
 	PurchasedStudioScheme(std::string_view artist, std::string_view track, std::string_view name) :
 		Scheme(artist, track, name) {
 	}
+	static std::unique_ptr<Scheme> create(std::string_view rootname);
 };
 
 // extended StudioScheme found on ClassicFM CDs
@@ -53,6 +54,7 @@ public:
 	ClassicFMScheme(std::string_view artist, std::string_view track, std::string_view name) :
 		Scheme(artist, track, name) {
 	}
+	static std::unique_ptr<Scheme> create(std::string_view rootname);
 };
 
 // created be abcde ripper
@@ -65,6 +67,7 @@ public:
 	std::string_view artist() const override {
 		return "Unknown Artist";
 	}
+	static std::unique_ptr<Scheme> create(std::string_view rootname);
 };
 
 // created be abcde ripper
@@ -77,6 +80,33 @@ public:
 	std::string_view artist() const override {
 		return "Unknown Artist";
 	}
+	static std::unique_ptr<Scheme> create(std::string_view rootname);
+};
+
+// created be abcde ripper
+// disk-track name
+class MultiCdGenericRipScheme : public Scheme {
+public:
+	MultiCdGenericRipScheme(std::string_view track, std::string_view name) :
+		Scheme({}, track, name) {
+	}
+	std::string_view artist() const override {
+		return "Unknown Artist";
+	}
+	static std::unique_ptr<Scheme> create(std::string_view rootname);
+};
+
+// created be abcde ripper
+// 1-07.Shes_strange.flac
+class MultiCdGenericRipScheme2 : public Scheme {
+public:
+	MultiCdGenericRipScheme2(std::string_view track, std::string_view name) :
+		Scheme({}, track, name) {
+	}
+	std::string_view artist() const override {
+		return "Unknown Artist";
+	}
+	static std::unique_ptr<Scheme> create(std::string_view rootname);
 };
 
 // lazy: Track 01.mp3
@@ -87,4 +117,28 @@ public:
 	std::string_view artist() const override {
 		return "Unknown Artist";
 	}
+	static std::unique_ptr<Scheme> create(std::string_view rootname);
+};
+
+// special spaceless fornat found on some Andrae Crouch cds
+// B00G7PONRI_(disc_1)_01_-_You_Ain't_Livin'.mp3
+class SpacelessScheme : public Scheme {
+public:
+	SpacelessScheme(std::string_view track, std::string_view name) :
+		Scheme({}, track, name) {
+	}
+	std::string_view artist() const override {
+		return "Unknown Artist";
+	}
+	static std::unique_ptr<Scheme> create(std::string_view rootname);
+};
+
+// special spaceless fornati, source unknown, probably abcde
+// Chic-08-Take_It_Off.flac
+class SpacelessScheme2 : public Scheme {
+public:
+	SpacelessScheme2(std::string_view artist, std::string_view track, std::string_view name) :
+		Scheme(artist, track, name) {
+	}
+	static std::unique_ptr<Scheme> create(std::string_view rootname);
 };

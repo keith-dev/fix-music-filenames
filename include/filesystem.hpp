@@ -17,11 +17,11 @@ public:
 	virtual ~FileSystemContext() = default;
 	virtual void onDir(long level, std::string_view name);
 	virtual void onFile(long level, std::string_view name);
-	[[nodiscard]] virtual bool isFile(std::string_view name) const;
-	[[nodiscard]] std::string path_to_string() const;
+
+	[[nodiscard]] static bool isFile(std::string_view name);
+	[[nodiscard]] static std::string path_to_string(const path_type& path);
 
 private:
 	path_type path_;
-	std::map<path_type, std::list<std::unique_ptr<Scheme>>> files_;
-//	std::vector<path_type> paths_;
+	std::map<std::string, std::list<std::unique_ptr<Scheme>>> files_;
 };

@@ -1,11 +1,18 @@
-PROGS_CXX = fix-music-filenames
+PROGS_CXX = fix-music-filenames test
+
 PROG.fix-music-filenames = fix-music-filenames
-SRCS.fix-music-filenames = main.cc filesystem.cc scheme.cc
+SRCS.fix-music-filenames = src/main.cc src/filesystem.cc src/scheme.cc
+
+PROG.test = test
+SRCS.test = src/scheme.cc unittest/utils_test.cc \
+	unittest/PurchasedStudioSchemeTest.cc \
+	unittest/DefaultSchemeTest.cc
 
 PREFIX ?= ${HOME}
 MK_MAN = no
 
-CXXFLAGS = -g -std=c++20 -Wall -Wextra -Wno-unused-parameter -I${PREFIX}/include
+CXXFLAGS = -g -std=c++20 -Wall -Wextra -Wno-unused-parameter -Wno-unused-function -Iinclude -I${PREFIX}/include -I/usr/local/include
 LDFLAGS  = -L${PREFIX}/lib
+LDADD.test = -L/usr/local/lib -lgtest_main -lgtest
 
 .include <bsd.progs.mk>
