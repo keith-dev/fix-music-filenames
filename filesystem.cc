@@ -1,5 +1,4 @@
 #include "filesystem.hpp"
-#include "scheme.hpp"
 
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -18,7 +17,9 @@ void FileSystemContext::onFile(long level, std::string_view name) {
 	}
 
 	auto scheme = Scheme::create(name);
-	if (!scheme) {
+	if (scheme) {
+		files_[path_].emplace_back(std::move(scheme));
+	} else {
 //		throw std::domain_error{fmt::format("unknown format: {}", name)};
 		spdlog::error("unknown format: {}", name);
 	}

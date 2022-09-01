@@ -29,6 +29,7 @@ public:
 };
 
 // created by CD mastering, found on CDs going back to the 1980s to present
+// artist - track - name
 class StudioScheme : public Scheme {
 public:
 	StudioScheme(std::string_view artist, std::string_view track, std::string_view name) :
@@ -36,7 +37,17 @@ public:
 	}
 };
 
+// found on recent online CD purchases
+// artist - track. name
+class PurchasedStudioScheme : public Scheme {
+public:
+	PurchasedStudioScheme(std::string_view artist, std::string_view track, std::string_view name) :
+		Scheme(artist, track, name) {
+	}
+};
+
 // extended StudioScheme found on ClassicFM CDs
+// conductor - orchestra - track - name
 class ClassicFMScheme : public Scheme {
 public:
 	ClassicFMScheme(std::string_view artist, std::string_view track, std::string_view name) :
@@ -44,7 +55,8 @@ public:
 	}
 };
 
-// created be abcde ripper: 01.Happy Birthday.mp3
+// created be abcde ripper
+// track.name
 class AbcdeScheme : public Scheme {
 public:
 	AbcdeScheme(std::string_view track, std::string_view name) :
@@ -55,7 +67,8 @@ public:
 	}
 };
 
-// created be abcde ripper: 01 Happy Birthday.mp3
+// created be abcde ripper
+// track name
 class GenericRipScheme : public Scheme {
 public:
 	GenericRipScheme(std::string_view track, std::string_view name) :

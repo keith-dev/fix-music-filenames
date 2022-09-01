@@ -127,6 +127,16 @@ std::unique_ptr<Scheme> Scheme::create(std::string_view name) {
 			return std::make_unique<GenericRipScheme>(strings[0], name);
 		}
 	}
-	spdlog::debug("cannot determine scheme: {}", name);
+	// PurchasedStudioScheme
+	{
+		const auto strings = count_separators(rootname, " - ", 1);
+		if (strings.size() == 2) {
+			auto second = count_separators(strings[1], ". ", 1);
+			if (second.size() == 2 && second[0].size() == 2 && is_numeric(second[0])) {
+				return std::make_unique<PurchasedStudioScheme>(strings[0], second[0], second[1]);
+			}
+		}
+	}
+//	spdlog::debug("cannot determine scheme: {}", name);
 	return {};
 }

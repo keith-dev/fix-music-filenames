@@ -1,5 +1,9 @@
 #pragma once
 
+#include "scheme.hpp"
+
+#include <map>
+#include <list>
 #include <string>
 #include <string_view>
 #include <vector>
@@ -18,5 +22,6 @@ public:
 
 private:
 	path_type path_;
+	std::map<path_type, std::list<std::unique_ptr<Scheme>>> files_;
 //	std::vector<path_type> paths_;
 };
