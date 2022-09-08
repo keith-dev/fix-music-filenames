@@ -29,6 +29,7 @@ clean:
 	- rm $(DEPENDS.fix-music-filenames) $(SRCS.fix-music-filenames:.cc=.depend)
 	- rm $(PROG.fix-music-filenames)    $(SRCS.fix-music-filenames:.cc=.o)
 	- rm $(REPORT.fix-music-filenames)  $(SRCS.fix-music-filenames:.cc=.info)
+	- rm $(PROG.test) $(SRCS.test:.cc=.o)
 
 #-- specific rules ---
 $(PROG.fix-music-filenames): $(SRCS.fix-music-filenames:.cc=.o)

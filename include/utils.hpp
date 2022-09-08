@@ -29,7 +29,7 @@ std::string_view trim_trailing(std::string_view in, char token) {
 }
 
 inline
-std::string_view trim(std::string_view in, char token) {
+std::string_view trim(std::string_view in, char token = ' ') {
 	return trim_leading(trim_trailing(in, token), token);
 }
 
@@ -67,7 +67,7 @@ std::string_view trim_trailing(std::string_view in, std::string_view token) {
 }
 
 inline
-std::string_view trim(std::string_view in, std::string_view token) {
+std::string_view trim(std::string_view in, std::string_view token = "\t ") {
 	return trim_leading(trim_trailing(in, token), token);
 }
 
@@ -78,7 +78,8 @@ count_separators(std::string_view in, std::string_view token,
                  std::size_t max_tokens = std::numeric_limits<std::size_t>::max()) {
 	std::vector<std::string_view> strings;
 
-	auto name = trim(in, token);
+//	auto name = trim(in, token);
+	auto name = in;
 	if (name.size() < token.size()) {
 		return strings;
 	}
