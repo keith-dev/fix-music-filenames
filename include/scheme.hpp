@@ -27,21 +27,35 @@ public:
 	static std::unique_ptr<Scheme> create(std::string_view name);
 };
 
-// created by CD mastering, found on CDs going back to the 1980s to present
-// artist - track - name
-class StudioScheme : public Scheme {
-public:
-	StudioScheme(std::string_view artist, std::string_view track, std::string_view name) :
-		Scheme(artist, track, name) {
-	}
-	static std::unique_ptr<Scheme> create(std::string_view rootname);
-};
-
 // found on recent online CD purchases
 // artist - track. name
 class PurchasedStudioScheme : public Scheme {
 public:
 	PurchasedStudioScheme(std::string_view artist, std::string_view track, std::string_view name) :
+		Scheme(artist, track, name) {
+	}
+	static std::unique_ptr<Scheme> create(std::string_view rootname);
+};
+
+// special spaceless fornat found on some Amazon purchased cds
+// B00G7PONRI_(disc_1)_01_-_You_Ain't_Livin'.mp3
+class SpacelessScheme : public Scheme {
+public:
+	SpacelessScheme(std::string_view track, std::string_view name) :
+		Scheme({}, track, name) {
+	}
+	std::string_view artist() const override {
+		return "Unknown Artist";
+	}
+	static std::unique_ptr<Scheme> create(std::string_view rootname);
+};
+
+#ifdef HIDE
+// created by CD mastering, found on CDs going back to the 1980s to present
+// artist - track - name
+class StudioScheme : public Scheme {
+public:
+	StudioScheme(std::string_view artist, std::string_view track, std::string_view name) :
 		Scheme(artist, track, name) {
 	}
 	static std::unique_ptr<Scheme> create(std::string_view rootname);
@@ -120,19 +134,6 @@ public:
 	static std::unique_ptr<Scheme> create(std::string_view rootname);
 };
 
-// special spaceless fornat found on some Andrae Crouch cds
-// B00G7PONRI_(disc_1)_01_-_You_Ain't_Livin'.mp3
-class SpacelessScheme : public Scheme {
-public:
-	SpacelessScheme(std::string_view track, std::string_view name) :
-		Scheme({}, track, name) {
-	}
-	std::string_view artist() const override {
-		return "Unknown Artist";
-	}
-	static std::unique_ptr<Scheme> create(std::string_view rootname);
-};
-
 // special spaceless fornati, source unknown, probably abcde
 // Chic-08-Take_It_Off.flac
 class SpacelessScheme2 : public Scheme {
@@ -142,3 +143,4 @@ public:
 	}
 	static std::unique_ptr<Scheme> create(std::string_view rootname);
 };
+#endif

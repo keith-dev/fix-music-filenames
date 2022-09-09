@@ -5,7 +5,39 @@
 
 //----------------------------------------------------------------------------
 //
-/*
+// PurchasedStudioScheme
+// artist - track. name
+// Various Artists - 02. Life.mp3
+std::unique_ptr<Scheme> PurchasedStudioScheme::create(std::string_view rootname) {
+	auto strings = count_separators(rootname, " - ", 1);
+	if (strings.size() == 2) {
+		auto second = count_separators(strings[1], ". ", 1);
+		if (second.size() == 2 && second[0].size() == 2 && is_numeric(second[0])) {
+			return std::make_unique<PurchasedStudioScheme>(strings[0], second[0], second[1]);
+		}
+	}
+	return {};
+}
+
+// SpacelessScheme
+// B00G7PONRI_(disc_1)_01_-_You_Ain't_Livin'.mp3
+std::unique_ptr<Scheme> SpacelessScheme::create(std::string_view rootname) {
+	auto strings = count_separators(rootname, "-");
+	if (strings.size() == 2 && !has_space(rootname)) {
+		std::string newroot = replace_with_spaces(rootname, '_');
+
+		strings = count_separators(newroot, "-");
+		if (strings.size() == 2) {
+			auto firsts = count_separators(strings[0], " ");
+			if (firsts.size() > 1 && is_numeric(trim_trailing(firsts.back(), ' '))) {
+				return std::make_unique<SpacelessScheme>(firsts[firsts.size() - 1], strings[1]);
+			}
+		}
+	}
+	return {};
+}
+
+#ifdef HIDE
 // DefaultScheme
 std::unique_ptr<Scheme> DefaultScheme::create(std::string_view rootname) {
 	const auto strings = count_separators(rootname, " ", 2);
@@ -82,47 +114,6 @@ std::unique_ptr<Scheme> MultiCdGenericRipScheme2::create(std::string_view rootna
 	}
 	return {};
 }
- */
-
-// PurchasedStudioScheme
-std::unique_ptr<Scheme> PurchasedStudioScheme::create(std::string_view rootname) {
-	const auto strings = count_separators(rootname, " - ", 1);
-	spdlog::debug("rootname={}", rootname);
-	spdlog::debug("strings.size={}", strings.size());
-	if (strings.size() == 2) {
-		auto second = count_separators(strings[1], ". ", 1);
-		spdlog::debug("second.size={}", second.size());
-		if (second.size() == 2 && second[0].size() == 2 && is_numeric(second[0])) {
-			return std::make_unique<PurchasedStudioScheme>(strings[0], second[0], second[1]);
-		}
-	}
-	return {};
-}
-
-/*
-// SpacelessScheme
-// B00G7PONRI_(disc_1)_01_-_You_Ain't_Livin'.mp3
-std::unique_ptr<Scheme> SpacelessScheme::create(std::string_view rootname) {
-	const auto strings = count_separators(rootname, "-");
-//	spdlog::debug("strings.size={} has_spaces={}", strings.size(), has_space(rootname));
-
-	if (strings.size() == 2 && !has_space(rootname)) {
-		std::string newroot = replace_with_spaces(rootname, '_');
-//		spdlog::debug("newroot={}", newroot);
-
-		const auto strings = count_separators(newroot, "-");
-//		spdlog::debug("strings.size={}", strings.size());
-		if (strings.size() == 2) {
-			const auto firsts = count_separators(strings[0], " ");
-
-//			spdlog::debug("strings[0]=\"{}\" firsts.size={}", strings[0], firsts.size());
-			if (firsts.size() > 1 && is_numeric(firsts[firsts.size() - 1])) {
-				return std::make_unique<SpacelessScheme>(firsts[firsts.size() - 1], strings[1]);
-			}
-		}
-	}
-	return {};
-}
 
 // SpacelessScheme2
 // Chic-08-Take_It_Off.flac
@@ -136,13 +127,21 @@ std::unique_ptr<Scheme> SpacelessScheme2::create(std::string_view rootname) {
 	}
 	return {};
 }
- */
+#endif // HIDE
 
 std::unique_ptr<Scheme> Scheme::create(std::string_view name) {
 	auto basename = strip_path(name);
 	auto rootname = strip_extension(basename);
 
-/*
+	if (auto p = PurchasedStudioScheme::create(rootname)) {
+		spdlog::info("{}: {}", "PurchasedStudioScheme", rootname);
+		return p;
+	}
+	if (auto p = SpacelessScheme::create(rootname)) {
+		spdlog::info("{}: {}", "SpacelessScheme", rootname);
+		return p;
+	}
+#ifdef HIDE
 	if (auto p = DefaultScheme::create(rootname)) {
 		spdlog::info("{}: {}", "DefaultScheme", rootname);
 		return p;
@@ -171,22 +170,11 @@ std::unique_ptr<Scheme> Scheme::create(std::string_view name) {
 		spdlog::info("{}: {}", "MultiCdGenericRipScheme2", rootname);
 		return p;
 	}
- */
-	spdlog::debug("PurchasedStudioScheme: {}", rootname);
-	if (auto p = PurchasedStudioScheme::create(rootname)) {
-		spdlog::info("{}: {}", "PurchasedStudioScheme", rootname);
-		return p;
-	}
-/*
-	if (auto p = SpacelessScheme::create(rootname)) {
-		spdlog::info("{}: {}", "SpacelessScheme", rootname);
-		return p;
-	}
 	if (auto p = SpacelessScheme2::create(rootname)) {
 		spdlog::info("{}: {}", "SpacelessScheme2", rootname);
 		return p;
 	}
- */
+#endif // HIDE
 //	spdlog::debug("cannot determine scheme: {}", name);
 	return {};
 }

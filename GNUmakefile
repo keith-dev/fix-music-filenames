@@ -7,8 +7,9 @@ PROG.test = test
 DEPENDSS.test = test.depends
 REPORT.test = test.report
 SRCS.test = src/scheme.cc unittest/utils_test.cc \
-	unittest/DefaultSchemeTest.cc \
-	unittest/PurchasedStudioSchemeTest.cc
+	unittest/PurchasedStudioSchemeTest.cc \
+	unittest/SpacelessSchemeTest.cc \
+	unittest/DefaultSchemeTest.cc
 
 PROGS_CXX = $(PROG.fix-music-filenames) $(PROG.test)
 DEPENDS = $(DEPENDS.fix-music-filenames) $(DEPENDS.test)
