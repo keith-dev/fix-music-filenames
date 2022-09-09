@@ -7,6 +7,7 @@ PROG.test = test
 SRCS.test = src/scheme.cc unittest/utils_test.cc \
 	unittest/PurchasedStudioSchemeTest.cc \
 	unittest/SpacelessSchemeTest.cc \
+	unittest/StudioSchemeTest.cc \
 	unittest/DefaultSchemeTest.cc
 
 PREFIX ?= ${HOME}

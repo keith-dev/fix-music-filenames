@@ -29,6 +29,7 @@ public:
 
 // found on recent online CD purchases
 // artist - track. name
+// Various Artists - 02. Life.mp3
 class PurchasedStudioScheme : public Scheme {
 public:
 	PurchasedStudioScheme(std::string_view artist, std::string_view track, std::string_view name) :
@@ -38,6 +39,7 @@ public:
 };
 
 // special spaceless fornat found on some Amazon purchased cds
+// artist_-_track_-_name
 // B00G7PONRI_(disc_1)_01_-_You_Ain't_Livin'.mp3
 class SpacelessScheme : public Scheme {
 public:
@@ -50,9 +52,9 @@ public:
 	static std::unique_ptr<Scheme> create(std::string_view rootname);
 };
 
-#ifdef HIDE
 // created by CD mastering, found on CDs going back to the 1980s to present
 // artist - track - name
+// Rufus with Chaka Khan - 04 - Music Man (The DJ Song).flac
 class StudioScheme : public Scheme {
 public:
 	StudioScheme(std::string_view artist, std::string_view track, std::string_view name) :
@@ -61,6 +63,7 @@ public:
 	static std::unique_ptr<Scheme> create(std::string_view rootname);
 };
 
+#ifdef HIDE
 // extended StudioScheme found on ClassicFM CDs
 // conductor - orchestra - track - name
 class ClassicFMScheme : public Scheme {

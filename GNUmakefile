@@ -9,6 +9,7 @@ REPORT.test = test.report
 SRCS.test = src/scheme.cc unittest/utils_test.cc \
 	unittest/PurchasedStudioSchemeTest.cc \
 	unittest/SpacelessSchemeTest.cc \
+	unittest/StudioSchemeTest.cc \
 	unittest/DefaultSchemeTest.cc
 
 PROGS_CXX = $(PROG.fix-music-filenames) $(PROG.test)

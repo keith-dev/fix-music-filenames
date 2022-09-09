@@ -20,6 +20,7 @@ std::unique_ptr<Scheme> PurchasedStudioScheme::create(std::string_view rootname)
 }
 
 // SpacelessScheme
+// artist_-_track_-_name
 // B00G7PONRI_(disc_1)_01_-_You_Ain't_Livin'.mp3
 std::unique_ptr<Scheme> SpacelessScheme::create(std::string_view rootname) {
 	auto strings = count_separators(rootname, "-");
@@ -37,6 +38,17 @@ std::unique_ptr<Scheme> SpacelessScheme::create(std::string_view rootname) {
 	return {};
 }
 
+// StudioScheme
+// artist - track - name
+// Rufus with Chaka Khan - 04 - Music Man (The DJ Song).flac
+std::unique_ptr<Scheme> StudioScheme::create(std::string_view rootname) {
+	const auto strings = count_separators(rootname, " - ", 3);
+	if (strings.size() == 3 && strings[1].size() == 2 && is_numeric(strings[1])) {
+		return std::make_unique<StudioScheme>(strings[0], strings[1], strings[2]);
+	}
+	return {};
+}
+
 #ifdef HIDE
 // DefaultScheme
 std::unique_ptr<Scheme> DefaultScheme::create(std::string_view rootname) {
@@ -44,15 +56,6 @@ std::unique_ptr<Scheme> DefaultScheme::create(std::string_view rootname) {
 	if (strings.size() == 2 &&
 	    (strings[0] == "Track") && is_numeric(strings[1])) {
 		return std::make_unique<DefaultScheme>(strings[1]);
-	}
-	return {};
-}
-
-// StudioScheme
-std::unique_ptr<Scheme> StudioScheme::create(std::string_view rootname) {
-	const auto strings = count_separators(rootname, " - ", 3);
-	if (strings.size() == 3 && strings[1].size() == 2 && is_numeric(strings[1])) {
-		return std::make_unique<StudioScheme>(strings[0], strings[1], strings[2]);
 	}
 	return {};
 }
@@ -141,13 +144,14 @@ std::unique_ptr<Scheme> Scheme::create(std::string_view name) {
 		spdlog::info("{}: {}", "SpacelessScheme", rootname);
 		return p;
 	}
+	if (auto p = StudioScheme::create(rootname)) {
+		spdlog::info("{}: {}", "", rootname);
+		return p;
+	}
+
 #ifdef HIDE
 	if (auto p = DefaultScheme::create(rootname)) {
 		spdlog::info("{}: {}", "DefaultScheme", rootname);
-		return p;
-	}
-	if (auto p = StudioScheme::create(rootname)) {
-		spdlog::info("{}: {}", "", rootname);
 		return p;
 	}
 	if (auto p = ClassicFMScheme::create(rootname)) {
