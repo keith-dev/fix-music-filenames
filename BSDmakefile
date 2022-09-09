@@ -4,7 +4,7 @@ PROG.fix-music-filenames = fix-music-filenames
 SRCS.fix-music-filenames = src/main.cc src/filesystem.cc src/scheme.cc
 
 PROG.test = test
-SRCS.test = src/scheme.cc unittest/utils_test.cc \
+SRCS.test = src/scheme.cc unittest/utilsTest.cc \
 	unittest/PurchasedStudioSchemeTest.cc \
 	unittest/SpacelessSchemeTest.cc \
 	unittest/StudioSchemeTest.cc \

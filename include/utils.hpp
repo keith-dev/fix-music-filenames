@@ -1,14 +1,14 @@
 #pragma once
 
-#include <cstring>
 #include <limits>
 #include <string>
 #include <string_view>
 #include <vector>
-#include <utility>
 
 //----------------------------------------------------------------------------
 //
+
+// remote all instances of token from the beginning of string_view
 inline
 std::string_view trim_leading(std::string_view in, char token) {
 	for (std::size_t i = 0; i != in.size(); ++i) {
@@ -19,6 +19,7 @@ std::string_view trim_leading(std::string_view in, char token) {
 	return {};
 }
 
+// remote all instances of token from the end of string_view
 inline
 std::string_view trim_trailing(std::string_view in, char token) {
 	for (std::size_t i = in.size(); i; --i) {
@@ -29,57 +30,66 @@ std::string_view trim_trailing(std::string_view in, char token) {
 	return {};
 }
 
+// remote all instances of token from the beginning and end of string_view
 inline
-std::string_view trim(std::string_view in, char token = ' ') {
+std::string_view trim(std::string_view in, char token) {
 	return trim_leading(trim_trailing(in, token), token);
 }
 
+// remote all instances of any token in tokens from the beginning of string_view
 inline
 std::string_view trim_leading(std::string_view in, std::string_view token) {
-	if (in.size() < token.size()) {
-		return in;
-	}
-	std::size_t i = 0;
-	std::size_t mx = in.size() - token.size();
-	while (i != mx) {
-		if (std::memcmp(in.data() + i, token.data(), token.size()) == 0) {
-			i += token.size();
-		} else {
-			return {in.data() + i, in.size() - 1};
+	for (std::size_t i = 0; i != in.size(); ) {
+		bool found{};
+		for (std::size_t j = 0; i != in.size() && j != token.size(); ++j) {
+			if (in[i] == token[j]) {
+				++i;
+				found = true;
+				break;
+			}
+		}
+
+		if (!found) {
+			return {in.data() + i, in.size() - i};
 		}
 	}
 	return {};
 }
 
+// remote all instances of any token in tokens from the end of string_view
 inline
 std::string_view trim_trailing(std::string_view in, std::string_view token) {
-	if (in.size() < token.size()) {
-		return in;
-	}
-	std::size_t i = in.size() - token.size();
-	while (i) {
-		if (std::memcmp(in.data() + i - 1, token.data(), token.size()) == 0) {
-			i -= token.size();;
-		} else {
+	for (std::size_t i = in.size(); i > 0; ) {
+		bool found{};
+		for (std::size_t j = 0; i > 0 && j != token.size(); ++j) {
+			if (in[i - 1] == token[j]) {
+				--i;
+				found = true;
+				break;
+			}
+		}
+
+		if (!found) {
 			return {in.data(), i};
 		}
 	}
 	return {};
 }
 
+// remote all instances of any token in tokens from the beginning and end of string_view
 inline
 std::string_view trim(std::string_view in, std::string_view token = "\t ") {
 	return trim_leading(trim_trailing(in, token), token);
 }
 
 // tokenize
+// return a vector of string_views separated by entire token
 inline
 std::vector<std::string_view>
 count_separators(std::string_view in, std::string_view token,
                  std::size_t max_tokens = std::numeric_limits<std::size_t>::max()) {
 	std::vector<std::string_view> strings;
 
-//	auto name = trim(in, token);
 	auto name = in;
 	if (name.size() < token.size()) {
 		return strings;
@@ -116,6 +126,7 @@ count_separators(std::string_view in, std::string_view token,
 	return strings;
 }
 
+// strip extension if present
 inline
 std::string_view strip_extension(std::string_view name) {
 	std::size_t i;
@@ -127,6 +138,7 @@ std::string_view strip_extension(std::string_view name) {
 	return name;
 }
 
+// string path if present
 inline
 std::string_view strip_path(std::string_view name) {
 	std::size_t i;
@@ -138,6 +150,7 @@ std::string_view strip_path(std::string_view name) {
 	return name;
 }
 
+// replace token with space, return a new string
 inline
 std::string replace_with_spaces(std::string_view in, char token) {
 	std::string str(in.size(), ' ');
