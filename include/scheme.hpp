@@ -63,6 +63,17 @@ public:
 	static std::unique_ptr<Scheme> create(std::string_view rootname);
 };
 
+// lazy: Track 01.mp3
+class DefaultScheme : public Scheme {
+public:
+	DefaultScheme(std::string_view track) : Scheme({}, track, "Track") {
+	}
+	std::string_view artist() const override {
+		return "Unknown Artist";
+	}
+	static std::unique_ptr<Scheme> create(std::string_view rootname);
+};
+
 #ifdef HIDE
 // extended StudioScheme found on ClassicFM CDs
 // conductor - orchestra - track - name
@@ -119,17 +130,6 @@ class MultiCdGenericRipScheme2 : public Scheme {
 public:
 	MultiCdGenericRipScheme2(std::string_view track, std::string_view name) :
 		Scheme({}, track, name) {
-	}
-	std::string_view artist() const override {
-		return "Unknown Artist";
-	}
-	static std::unique_ptr<Scheme> create(std::string_view rootname);
-};
-
-// lazy: Track 01.mp3
-class DefaultScheme : public Scheme {
-public:
-	DefaultScheme(std::string_view track) : Scheme({}, track, "Track") {
 	}
 	std::string_view artist() const override {
 		return "Unknown Artist";

@@ -31,7 +31,8 @@ std::unique_ptr<Scheme> SpacelessScheme::create(std::string_view rootname) {
 		if (strings.size() == 2) {
 			auto firsts = count_separators(strings[0], " ");
 			if (firsts.size() > 1 && is_numeric(trim_trailing(firsts.back(), ' '))) {
-				return std::make_unique<SpacelessScheme>(firsts[firsts.size() - 1], strings[1]);
+				firsts.back() = trim_trailing(firsts.back(), ' ');
+				return std::make_unique<SpacelessScheme>(firsts.back(), strings[1]);
 			}
 		}
 	}
@@ -49,8 +50,8 @@ std::unique_ptr<Scheme> StudioScheme::create(std::string_view rootname) {
 	return {};
 }
 
-#ifdef HIDE
 // DefaultScheme
+// lazy: Track 01.mp3
 std::unique_ptr<Scheme> DefaultScheme::create(std::string_view rootname) {
 	const auto strings = count_separators(rootname, " ", 2);
 	if (strings.size() == 2 &&
@@ -60,6 +61,7 @@ std::unique_ptr<Scheme> DefaultScheme::create(std::string_view rootname) {
 	return {};
 }
 
+#ifdef HIDE
 // ClassicFMScheme
 std::unique_ptr<Scheme> ClassicFMScheme::create(std::string_view rootname) {
 	const auto strings = count_separators(rootname, " - ", 4);
@@ -148,12 +150,12 @@ std::unique_ptr<Scheme> Scheme::create(std::string_view name) {
 		spdlog::info("{}: {}", "", rootname);
 		return p;
 	}
-
-#ifdef HIDE
 	if (auto p = DefaultScheme::create(rootname)) {
 		spdlog::info("{}: {}", "DefaultScheme", rootname);
 		return p;
 	}
+
+#ifdef HIDE
 	if (auto p = ClassicFMScheme::create(rootname)) {
 		spdlog::info("{}: {}", "ClassicFSchemeM", rootname);
 		return p;
