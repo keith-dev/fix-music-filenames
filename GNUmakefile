@@ -1,19 +1,14 @@
 PROG.fix-music-filenames   = fix-music-filenames
-DEPENDS.fix-music-filenames= fix-music-filenames.depends
 REPORT.fix-music-filenames = fix-music-filenames.report
 SRCS.fix-music-filenames   = src/main.cc src/filesystem.cc src/scheme.cc
 
 PROG.test = test
-DEPENDSS.test = test.depends
 REPORT.test = test.report
 SRCS.test = src/scheme.cc unittest/utilsTest.cc \
 	unittest/PurchasedStudioSchemeTest.cc \
 	unittest/SpacelessSchemeTest.cc \
 	unittest/StudioSchemeTest.cc \
 	unittest/DefaultSchemeTest.cc
-
-PROGS_CXX = $(PROG.fix-music-filenames) $(PROG.test)
-DEPENDS = $(DEPENDS.fix-music-filenames) $(DEPENDS.test)
 
 PREFIX   ?= ${HOME}
 CXXFLAGS += -g -std=c++20 -Wall -Wextra -Wno-unused-parameter -Wno-unused-function -Iinclude -I$(PREFIX)/include
@@ -23,15 +18,17 @@ LDADD.gtest = -lgtest_maind -lgtestd
 INFO      ?= clang-tidy
 INFOFLAGS ?= -checks='clang-analyzer-*,misc-*,modernize-*,-modernize-use-trailing-return-type,portability-*,performance-*,readability-*,-readability-identifier-length'
 
-all: $(DEPENDS) $(PROGS_CXX)
+.PHONY: all report clean
+
+all: $(PROG.fix-music-filenames) $(PROG.test)
 
 report: $(REPORT.fix-music-filenames)
 
 clean:
-	- rm $(DEPENDS.fix-music-filenames) $(SRCS.fix-music-filenames:.cc=.depend)
-	- rm $(PROG.fix-music-filenames)    $(SRCS.fix-music-filenames:.cc=.o)
-	- rm $(REPORT.fix-music-filenames)  $(SRCS.fix-music-filenames:.cc=.info)
-	- rm $(PROG.test) $(SRCS.test:.cc=.o)
+	- rm $(PROG.fix-music-filenames) $(SRCS.fix-music-filenames:.cc=.o) $(SRCS.fix-music-filenames:.cc=.d)
+	- rm $(REPORT.fix-music-filenames) $(SRCS.fix-music-filenames:.cc=.info)
+	- rm $(PROG.test) $(SRCS.test:.cc=.o) $(SRCS.test:.cc=.d)
+	- rm $(REPORT.test) $(SRCS.test:.cc=.info)
 
 #-- specific rules ---
 $(PROG.fix-music-filenames): $(SRCS.fix-music-filenames:.cc=.o)
@@ -40,17 +37,16 @@ $(PROG.fix-music-filenames): $(SRCS.fix-music-filenames:.cc=.o)
 $(PROG.test): $(SRCS.test:.cc=.o)
 	$(LINK.cc) -o $@ $^ $(LDFLAGS) $(LDADD.gtest)
 
-$(DEPENDS.fix-music-filenames): $(SRCS.fix-music-filenames:.cc=.depend)
-	cat $^ > $@
-
 $(REPORT.fix-music-filenames): $(SRCS.fix-music-filenames:.cc=.info)
 
+$(REPORT.test): $(SRCS.test:.cc=.info)
+
 #-- generic rules ---
-%.depend: %.cc
-	$(COMPILE.cc) -MM $< -o $@
+%.d: %.cc
+	$(CXX) -MM $(CXXFLAGS) $< | sed 's,[^:]*:,$*.o $@ :,g' > $@
 
 %.info: %.cc
 	$(INFO) $(INFOFLAGS) $< -- $(CXXFLAGS) > $@
 
 #-- generated inculde file ---
--include $(DEPENDS.fix-music-filenames)
+include $(SRCS.fix-music-filenames:.cc=.d) $(SRCS.test:.cc=.d)
