@@ -21,7 +21,7 @@ LDFLAGS  += -L${PREFIX}/lib
 LDADD.gtest = -lgtest_maind -lgtestd
 
 INFO      ?= clang-tidy
-INFOFLAGS ?= -checks='clang-analyzer-*,misc-*,modernize-*,-modernize-use-trailing-return-type,portability-*,readability-*,-readability-identifier-length'
+INFOFLAGS ?= -checks='clang-analyzer-*,misc-*,modernize-*,-modernize-use-trailing-return-type,portability-*,performance-*,readability-*,-readability-identifier-length'
 
 all: $(DEPENDS) $(PROGS_CXX)
 
