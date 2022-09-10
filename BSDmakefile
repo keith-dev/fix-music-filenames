@@ -8,6 +8,7 @@ SRCS.test = src/scheme.cc unittest/utilsTest.cc \
 	unittest/PurchasedStudioSchemeTest.cc \
 	unittest/SpacelessSchemeTest.cc \
 	unittest/StudioSchemeTest.cc \
+	unittest/AbcdeSchemeTest.cc \
 	unittest/DefaultSchemeTest.cc
 
 PREFIX ?= ${HOME}

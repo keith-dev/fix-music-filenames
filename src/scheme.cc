@@ -5,6 +5,7 @@
 
 //----------------------------------------------------------------------------
 //
+
 // PurchasedStudioScheme
 // artist - track. name
 // Various Artists - 02. Life.mp3
@@ -61,6 +62,15 @@ std::unique_ptr<Scheme> DefaultScheme::create(std::string_view rootname) {
 	return {};
 }
 
+// AbcdeScheme
+std::unique_ptr<Scheme> AbcdeScheme::create(std::string_view rootname) {
+	const auto strings = count_separators(rootname, ".", 1);
+	if (strings.size() == 2 && is_numeric(strings[0])) {
+		return std::make_unique<AbcdeScheme>(strings[0], trim(strings[1]));
+	}
+	return {};
+}
+
 #ifdef HIDE
 // ClassicFMScheme
 std::unique_ptr<Scheme> ClassicFMScheme::create(std::string_view rootname) {
@@ -68,15 +78,6 @@ std::unique_ptr<Scheme> ClassicFMScheme::create(std::string_view rootname) {
 	if (strings.size() == 4 && strings[2].size() == 2 && is_numeric(strings[2])) {
 		std::string_view artist{ strings[0].data(), strings[0].size() + 3 + strings[1].size() };
 		return std::make_unique<ClassicFMScheme>(artist, strings[2], strings[2]);
-	}
-	return {};
-}
-
-// AbcdeScheme
-std::unique_ptr<Scheme> AbcdeScheme::create(std::string_view rootname) {
-	const auto strings = count_separators(rootname, ".", 1);
-	if (strings.size() == 2 && is_numeric(strings[0])) {
-		return std::make_unique<AbcdeScheme>(strings[0], strings[1]);
 	}
 	return {};
 }
@@ -154,14 +155,14 @@ std::unique_ptr<Scheme> Scheme::create(std::string_view name) {
 		spdlog::info("{}: {}", "DefaultScheme", rootname);
 		return p;
 	}
+	if (auto p = AbcdeScheme::create(rootname)) {
+		spdlog::info("{}: {}", "AbcdeScheme", rootname);
+		return p;
+	}
 
 #ifdef HIDE
 	if (auto p = ClassicFMScheme::create(rootname)) {
 		spdlog::info("{}: {}", "ClassicFSchemeM", rootname);
-		return p;
-	}
-	if (auto p = AbcdeScheme::create(rootname)) {
-		spdlog::info("{}: {}", "AbcdeScheme", rootname);
 		return p;
 	}
 	if (auto p = GenericRipScheme::create(rootname)) {

@@ -74,17 +74,6 @@ public:
 	static std::unique_ptr<Scheme> create(std::string_view rootname);
 };
 
-#ifdef HIDE
-// extended StudioScheme found on ClassicFM CDs
-// conductor - orchestra - track - name
-class ClassicFMScheme : public Scheme {
-public:
-	ClassicFMScheme(std::string_view artist, std::string_view track, std::string_view name) :
-		Scheme(artist, track, name) {
-	}
-	static std::unique_ptr<Scheme> create(std::string_view rootname);
-};
-
 // created be abcde ripper
 // track.name
 class AbcdeScheme : public Scheme {
@@ -94,6 +83,17 @@ public:
 	}
 	std::string_view artist() const override {
 		return "Unknown Artist";
+	}
+	static std::unique_ptr<Scheme> create(std::string_view rootname);
+};
+
+#ifdef HIDE
+// extended StudioScheme found on ClassicFM CDs
+// conductor - orchestra - track - name
+class ClassicFMScheme : public Scheme {
+public:
+	ClassicFMScheme(std::string_view artist, std::string_view track, std::string_view name) :
+		Scheme(artist, track, name) {
 	}
 	static std::unique_ptr<Scheme> create(std::string_view rootname);
 };
