@@ -2,8 +2,9 @@
 
 #include "scheme.hpp"
 
-#include <map>
+#include <array>
 #include <list>
+#include <map>
 #include <string>
 #include <string_view>
 #include <vector>
@@ -22,6 +23,13 @@ public:
 	[[nodiscard]] static std::string path_to_string(const path_type& path);
 
 private:
+	inline static constexpr std::array<std::string_view, 4> known_extensions_{
+		".flac",
+		".mp3",
+		".ogg",
+		".wav"
+	};
+
 	path_type path_;
 	std::map<std::string, std::list<std::unique_ptr<Scheme>>> files_;
 };

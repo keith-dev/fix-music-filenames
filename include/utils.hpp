@@ -8,7 +8,7 @@
 //----------------------------------------------------------------------------
 //
 
-// remote all instances of token from the beginning of string_view
+// remove all instances of token from the beginning of string_view
 inline
 std::string_view trim_leading(std::string_view in, char token) {
 	for (std::size_t i = 0; i != in.size(); ++i) {
@@ -19,7 +19,7 @@ std::string_view trim_leading(std::string_view in, char token) {
 	return {};
 }
 
-// remote all instances of token from the end of string_view
+// remove all instances of token from the end of string_view
 inline
 std::string_view trim_trailing(std::string_view in, char token) {
 	for (std::size_t i = in.size(); i; --i) {
@@ -30,13 +30,13 @@ std::string_view trim_trailing(std::string_view in, char token) {
 	return {};
 }
 
-// remote all instances of token from the beginning and end of string_view
+// remove all instances of token from the beginning and end of string_view
 inline
 std::string_view trim(std::string_view in, char token) {
 	return trim_leading(trim_trailing(in, token), token);
 }
 
-// remote all instances of any token in tokens from the beginning of string_view
+// remove all instances of any token in tokens from the beginning of string_view
 inline
 std::string_view trim_leading(std::string_view in, std::string_view token) {
 	for (std::size_t i = 0; i != in.size(); ) {
@@ -56,7 +56,7 @@ std::string_view trim_leading(std::string_view in, std::string_view token) {
 	return {};
 }
 
-// remote all instances of any token in tokens from the end of string_view
+// remove all instances of any token in tokens from the end of string_view
 inline
 std::string_view trim_trailing(std::string_view in, std::string_view token) {
 	for (std::size_t i = in.size(); i > 0; ) {
@@ -76,7 +76,7 @@ std::string_view trim_trailing(std::string_view in, std::string_view token) {
 	return {};
 }
 
-// remote all instances of any token in tokens from the beginning and end of string_view
+// remove all instances of any token in tokens from the beginning and end of string_view
 inline
 std::string_view trim(std::string_view in, std::string_view token = "\t ") {
 	return trim_leading(trim_trailing(in, token), token);
@@ -136,6 +136,23 @@ std::string_view strip_extension(std::string_view name) {
 		}
 	}
 	return name;
+}
+
+inline
+std::string_view extension(std::string_view name) {
+	if (name.empty()) {
+		return name;
+	}
+	// linear search for last .
+	std::size_t i = name.size();
+	while (i > 0 && name[i] != '.') {
+		--i;
+	}
+
+	if (name[i] == '.') {
+		return {name.data() + i, name.size() - i};
+	}
+	return {};
 }
 
 // string path if present

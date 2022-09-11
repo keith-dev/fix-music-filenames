@@ -41,3 +41,17 @@ TEST(utilsTest, StringViewTrimTrailing) {
 	EXPECT_EQ(name.size(), trim_trailing(name, "- ").size() + 6);
 	EXPECT_EQ(static_cast<std::size_t>(0), trim_trailing(name, " +-HelloWorld").size());
 }
+
+TEST(utilsTest, extension) {
+	std::string_view name = "Various Artists - 18. Guess Who_ (feat. Mykal Rose).mp3";
+	EXPECT_EQ(extension(name), ".mp3");
+
+	name = ".flac";
+	EXPECT_EQ(extension(name), ".flac");
+
+	name = "unittest";
+	EXPECT_TRUE(extension(name).empty());
+
+	name = {};
+	EXPECT_TRUE(extension(name).empty());
+}

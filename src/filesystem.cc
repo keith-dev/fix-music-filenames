@@ -1,4 +1,5 @@
 #include "filesystem.hpp"
+#include "utils.hpp"
 
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -9,7 +10,25 @@
 
 //----------------------------------------------------------------------------
 //
+
+namespace {
+template <typename COLLECTION, typename T>
+inline
+bool any_of(const COLLECTION &set, const T &value) {
+	for (auto entry : set) {
+		if (value == entry) {
+			return true;
+		}
+	}
+	return false;
+}
+} // namespace
+
 void FileSystemContext::onFile(long level, std::string_view name) {
+	if (!any_of(known_extensions_, extension(name))) {
+		return;
+	}
+
 	static auto last_path = path_;
 	if (last_path != path_) {
 		last_path = path_;
