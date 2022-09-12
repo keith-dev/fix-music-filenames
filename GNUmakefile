@@ -12,7 +12,7 @@ SRCS.test = src/scheme.cc unittest/utilsTest.cc \
 	unittest/DefaultSchemeTest.cc
 
 PREFIX   ?= ${HOME}
-CXXFLAGS += -g -std=c++20 -Wall -Wextra -Wno-unused-parameter -Wno-unused-function -Iinclude -I$(PREFIX)/include
+CXXFLAGS += -g -std=c++20 -D_GLIBCXX_DEBUG -Wall -Wextra -Wno-unused-parameter -Wno-unused-function -Iinclude -I$(PREFIX)/include
 LDFLAGS  += -L${PREFIX}/lib
 LDADD.gtest = -lgtest_maind -lgtestd
 

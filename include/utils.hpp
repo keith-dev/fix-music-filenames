@@ -145,12 +145,12 @@ std::string_view extension(std::string_view name) {
 	}
 	// linear search for last .
 	std::size_t i = name.size();
-	while (i > 0 && name[i] != '.') {
+	while (i > 0 && name[i - 1] != '.') {
 		--i;
 	}
 
-	if (name[i] == '.') {
-		return {name.data() + i, name.size() - i};
+	if (i > 0 && name[i - 1] == '.') {
+		return {name.data() + i - 1, name.size() - i + 1};
 	}
 	return {};
 }

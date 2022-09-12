@@ -14,7 +14,7 @@ SRCS.test = src/scheme.cc unittest/utilsTest.cc \
 PREFIX ?= ${HOME}
 MK_MAN = no
 
-CXXFLAGS = -g -std=c++20 -Wall -Wextra -Wno-unused-parameter -Wno-unused-function -Iinclude -I${PREFIX}/include -I/usr/local/include
+CXXFLAGS = -g -std=c++20 -D_GLIBCXX_DEBUG -Wall -Wextra -Wno-unused-parameter -Wno-unused-function -Iinclude -I${PREFIX}/include -I/usr/local/include
 LDFLAGS  = -L${PREFIX}/lib
 LDADD.test = -L/usr/local/lib -lgtest_main -lgtest
 
