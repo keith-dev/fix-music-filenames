@@ -63,10 +63,41 @@ std::unique_ptr<Scheme> DefaultScheme::create(std::string_view rootname) {
 }
 
 // AbcdeScheme
+// 05. First Class Flight (feat. Prince S.mp3
 std::unique_ptr<Scheme> AbcdeScheme::create(std::string_view rootname) {
 	const auto strings = count_separators(rootname, ".", 1);
 	if (strings.size() == 2 && is_numeric(strings[0])) {
 		return std::make_unique<AbcdeScheme>(strings[0], trim(strings[1]));
+	}
+	return {};
+}
+
+// GenericRipScheme
+// 01 Temperature (Repack).mp3
+std::unique_ptr<Scheme> GenericRipScheme::create(std::string_view rootname) {
+	const auto strings = count_separators(rootname, " ", 1);
+	if (strings.size() > 1 && strings[0].size() == 2 && is_numeric(strings[0])) {
+		return std::make_unique<GenericRipScheme>(strings[0], strings[1]);
+	}
+	return {};
+}
+
+// MultiCdGenericRipScheme
+// 102-i-octane-nuh_ramp_wid_we.mp3
+std::unique_ptr<Scheme> MultiCdGenericRipScheme::create(std::string_view rootname) {
+	if (has_space(rootname)) {
+		return {};
+	}
+
+	std::string newroot = replace_with_spaces(rootname, '_');
+	auto strings = count_separators(newroot, "-");
+	if (strings.size() > 2 && is_numeric(strings[0])) {
+		auto track = strings[0];
+		auto title = strings.back();
+		auto artist = std::string_view{
+			strings[1].data(),
+			static_cast<std::size_t>(strings.back().data() - strings[1].data() - 1)};
+		return std::make_unique<MultiCdGenericRipScheme>(artist, track, title);
 	}
 	return {};
 }
@@ -82,30 +113,21 @@ std::unique_ptr<Scheme> ClassicFMScheme::create(std::string_view rootname) {
 	return {};
 }
 
-// GenericRipScheme
-std::unique_ptr<Scheme> GenericRipScheme::create(std::string_view rootname) {
-	const auto strings = count_separators(rootname, " ", 1);
-	if (strings.size() > 1 && strings[0].size() == 2 && is_numeric(strings[0])) {
-		return std::make_unique<GenericRipScheme>(strings[0], strings[1]);
-	}
-	return {};
-}
-
-// MultiCdGenericRipScheme
-std::unique_ptr<Scheme> MultiCdGenericRipScheme::create(std::string_view rootname) {
+// MultiCdGenericRipScheme2
+std::unique_ptr<Scheme> MultiCdGenericRipScheme2::create(std::string_view rootname) {
 	const auto strings = count_separators(rootname, " ", 1);
 	if (strings.size() == 2 && strings[0].size() == 4) {
 		auto ids = count_separators(strings[0], "-");
 		if (ids.size() == 2 && is_numeric(ids[0]) && is_numeric(ids[1])) {
-			return std::make_unique<MultiCdGenericRipScheme>(strings[0], strings[1]);
+			return std::make_unique<MultiCdGenericRipScheme2>(strings[0], strings[1]);
 		}
 	}
 	return {};
 }
 
-// MultiCdGenericRipScheme2
+// MultiCdGenericRipScheme3
 // 1-07.Shes_strange.flac
-std::unique_ptr<Scheme> MultiCdGenericRipScheme2::create(std::string_view rootname) {
+std::unique_ptr<Scheme> MultiCdGenericRipScheme3::create(std::string_view rootname) {
 	if (count_separators(rootname, " ").size() == 1) {
 		std::string rootstr = replace_with_spaces(rootname, '_');
 
@@ -159,12 +181,6 @@ std::unique_ptr<Scheme> Scheme::create(std::string_view name) {
 		spdlog::info("{}: {}", "AbcdeScheme", rootname);
 		return p;
 	}
-
-#ifdef HIDE
-	if (auto p = ClassicFMScheme::create(rootname)) {
-		spdlog::info("{}: {}", "ClassicFSchemeM", rootname);
-		return p;
-	}
 	if (auto p = GenericRipScheme::create(rootname)) {
 		spdlog::info("{}: {}", "GenericRipScheme", rootname);
 		return p;
@@ -173,8 +189,18 @@ std::unique_ptr<Scheme> Scheme::create(std::string_view name) {
 		spdlog::info("{}: {}", "MultiCdGenericRipScheme", rootname);
 		return p;
 	}
+
+#ifdef HIDE
+	if (auto p = ClassicFMScheme::create(rootname)) {
+		spdlog::info("{}: {}", "ClassicFSchemeM", rootname);
+		return p;
+	}
 	if (auto p = MultiCdGenericRipScheme2::create(rootname)) {
 		spdlog::info("{}: {}", "MultiCdGenericRipScheme2", rootname);
+		return p;
+	}
+	if (auto p = MultiCdGenericRipScheme3::create(rootname)) {
+		spdlog::info("{}: {}", "MultiCdGenericRipScheme3", rootname);
 		return p;
 	}
 	if (auto p = SpacelessScheme2::create(rootname)) {

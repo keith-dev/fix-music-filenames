@@ -76,6 +76,7 @@ public:
 
 // created be abcde ripper
 // track.name
+// 05. First Class Flight (feat. Prince S.mp3
 class AbcdeScheme : public Scheme {
 public:
 	AbcdeScheme(std::string_view track, std::string_view name) :
@@ -83,6 +84,30 @@ public:
 	}
 	std::string_view artist() const override {
 		return "Unknown Artist";
+	}
+	static std::unique_ptr<Scheme> create(std::string_view rootname);
+};
+
+// created be abcde ripper
+// track name
+// 01 Temperature (Repack).mp3
+class GenericRipScheme : public Scheme {
+public:
+	GenericRipScheme(std::string_view track, std::string_view name) :
+		Scheme({}, track, name) {
+	}
+	std::string_view artist() const override {
+		return "Unknown Artist";
+	}
+	static std::unique_ptr<Scheme> create(std::string_view rootname);
+};
+
+// created be abcde ripper
+// 102-i-octane-nuh_ramp_wid_we.mp3
+class MultiCdGenericRipScheme : public Scheme {
+public:
+	MultiCdGenericRipScheme(std::string_view artist, std::string_view track, std::string_view name) :
+		Scheme(artist, track, name) {
 	}
 	static std::unique_ptr<Scheme> create(std::string_view rootname);
 };
@@ -99,23 +124,10 @@ public:
 };
 
 // created be abcde ripper
-// track name
-class GenericRipScheme : public Scheme {
-public:
-	GenericRipScheme(std::string_view track, std::string_view name) :
-		Scheme({}, track, name) {
-	}
-	std::string_view artist() const override {
-		return "Unknown Artist";
-	}
-	static std::unique_ptr<Scheme> create(std::string_view rootname);
-};
-
-// created be abcde ripper
 // disk-track name
-class MultiCdGenericRipScheme : public Scheme {
+class MultiCdGenericRipScheme2 : public Scheme {
 public:
-	MultiCdGenericRipScheme(std::string_view track, std::string_view name) :
+	MultiCdGenericRipScheme2(std::string_view track, std::string_view name) :
 		Scheme({}, track, name) {
 	}
 	std::string_view artist() const override {
@@ -126,9 +138,9 @@ public:
 
 // created be abcde ripper
 // 1-07.Shes_strange.flac
-class MultiCdGenericRipScheme2 : public Scheme {
+class MultiCdGenericRipScheme3 : public Scheme {
 public:
-	MultiCdGenericRipScheme2(std::string_view track, std::string_view name) :
+	MultiCdGenericRipScheme3(std::string_view track, std::string_view name) :
 		Scheme({}, track, name) {
 	}
 	std::string_view artist() const override {
