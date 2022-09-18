@@ -102,6 +102,19 @@ std::unique_ptr<Scheme> MultiCdGenericRipScheme::create(std::string_view rootnam
 	return {};
 }
 
+// SpacelessScheme2
+// Chic-08-Take_It_Off.flac
+std::unique_ptr<Scheme> SpacelessScheme2::create(std::string_view rootname) {
+	if (count_separators(rootname, " ").size() == 1) {
+		std::string newroot = replace_with_spaces(rootname, '_');
+		const auto strings = count_separators(newroot, "-", 3);
+		if (strings.size() == 3) {
+			return std::make_unique<SpacelessScheme2>(strings[0], strings[1], strings[2]);
+		}
+	}
+	return {};
+}
+
 #ifdef HIDE
 // ClassicFMScheme
 std::unique_ptr<Scheme> ClassicFMScheme::create(std::string_view rootname) {
@@ -142,19 +155,6 @@ std::unique_ptr<Scheme> MultiCdGenericRipScheme3::create(std::string_view rootna
 	}
 	return {};
 }
-
-// SpacelessScheme2
-// Chic-08-Take_It_Off.flac
-std::unique_ptr<Scheme> SpacelessScheme2::create(std::string_view rootname) {
-	if (count_separators(rootname, " ").size() == 1) {
-		std::string newroot = replace_with_spaces(rootname, '_');
-		const auto strings = count_separators(newroot, "-", 3);
-		if (strings.size() == 3) {
-			return std::make_unique<SpacelessScheme2>(strings[0], strings[1], strings[2]);
-		}
-	}
-	return {};
-}
 #endif // HIDE
 
 std::unique_ptr<Scheme> Scheme::create(std::string_view name) {
@@ -189,6 +189,10 @@ std::unique_ptr<Scheme> Scheme::create(std::string_view name) {
 		spdlog::info("{}: {}", "MultiCdGenericRipScheme", rootname);
 		return p;
 	}
+	if (auto p = SpacelessScheme2::create(rootname)) {
+		spdlog::info("{}: {}", "SpacelessScheme2", rootname);
+		return p;
+	}
 
 #ifdef HIDE
 	if (auto p = ClassicFMScheme::create(rootname)) {
@@ -201,10 +205,6 @@ std::unique_ptr<Scheme> Scheme::create(std::string_view name) {
 	}
 	if (auto p = MultiCdGenericRipScheme3::create(rootname)) {
 		spdlog::info("{}: {}", "MultiCdGenericRipScheme3", rootname);
-		return p;
-	}
-	if (auto p = SpacelessScheme2::create(rootname)) {
-		spdlog::info("{}: {}", "SpacelessScheme2", rootname);
 		return p;
 	}
 #endif // HIDE

@@ -112,6 +112,16 @@ public:
 	static std::unique_ptr<Scheme> create(std::string_view rootname);
 };
 
+// special spaceless format, source unknown, probably abcde
+// Chic-08-Take_It_Off.flac
+class SpacelessScheme2 : public Scheme {
+public:
+	SpacelessScheme2(std::string_view artist, std::string_view track, std::string_view name) :
+		Scheme(artist, track, name) {
+	}
+	static std::unique_ptr<Scheme> create(std::string_view rootname);
+};
+
 #ifdef HIDE
 // extended StudioScheme found on ClassicFM CDs
 // conductor - orchestra - track - name
@@ -145,16 +155,6 @@ public:
 	}
 	std::string_view artist() const override {
 		return "Unknown Artist";
-	}
-	static std::unique_ptr<Scheme> create(std::string_view rootname);
-};
-
-// special spaceless fornati, source unknown, probably abcde
-// Chic-08-Take_It_Off.flac
-class SpacelessScheme2 : public Scheme {
-public:
-	SpacelessScheme2(std::string_view artist, std::string_view track, std::string_view name) :
-		Scheme(artist, track, name) {
 	}
 	static std::unique_ptr<Scheme> create(std::string_view rootname);
 };

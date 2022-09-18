@@ -7,6 +7,7 @@ PROG.test = test
 SRCS.test = src/scheme.cc unittest/utilsTest.cc \
 	unittest/PurchasedStudioSchemeTest.cc \
 	unittest/SpacelessSchemeTest.cc \
+	unittest/SpacelessScheme2Test.cc \
 	unittest/StudioSchemeTest.cc \
 	unittest/AbcdeSchemeTest.cc \
 	unittest/GenericRipSchemeTest.cc \
