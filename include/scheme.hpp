@@ -89,6 +89,28 @@ public:
 };
 
 // created be abcde ripper
+// track.name
+// 2-07.The Jones Girls  Nights Over Egypt-The Jones Girls  Nights Over Egypt.flac
+class AbcdeMultiCdScheme : public Scheme {
+public:
+	AbcdeMultiCdScheme(std::string_view artist, std::string_view track, std::string_view name) :
+		Scheme(artist, track, name) {
+	}
+	static std::unique_ptr<Scheme> create(std::string_view rootname);
+};
+
+// created be abcde ripper
+// track.name
+// 1-03.Chic  Good Times-Chic  Good Times.flac
+class AbcdeMultiCdScheme2 : public Scheme {
+public:
+	AbcdeMultiCdScheme2(std::string_view artist, std::string_view track, std::string_view name) :
+		Scheme(artist, track, name) {
+	}
+	static std::unique_ptr<Scheme> create(std::string_view rootname);
+};
+
+// created be abcde ripper
 // track name
 // 01 Temperature (Repack).mp3
 class GenericRipScheme : public Scheme {

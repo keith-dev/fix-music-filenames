@@ -17,8 +17,7 @@ void scan(FileSystemContext* ctx, char* path_argv[]) {
 	}
 
 	auto flags = FTS_COMFOLLOW | FTS_NOCHDIR | FTS_PHYSICAL | FTS_XDEV;
-	std::unique_ptr<FTS, decltype(&::fts_close)> fs{ fts_open(path_argv, flags, nullptr), fts_close };
-	if (fs) {
+	if (std::unique_ptr<FTS, decltype(&::fts_close)> fs{ fts_open(path_argv, flags, nullptr), fts_close }) {
 		while (auto* node = fts_read(fs.get())) {
 			switch (node->fts_info) {
 			case FTS_F:

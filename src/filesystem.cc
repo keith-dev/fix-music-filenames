@@ -35,8 +35,7 @@ void FileSystemContext::onFile(long level, std::string_view name) {
 		spdlog::info("level={} path={}", level, path_to_string(path_));
 	}
 
-	auto scheme = Scheme::create(name);
-	if (scheme) {
+	if (auto scheme = Scheme::create(name)) {
 		const auto key = path_to_string(path_);
 		files_[key].emplace_back(std::move(scheme));
 	} else {

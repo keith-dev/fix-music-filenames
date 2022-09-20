@@ -10,6 +10,8 @@ SRCS.test = src/scheme.cc unittest/utilsTest.cc \
 	unittest/SpacelessScheme2Test.cc \
 	unittest/StudioSchemeTest.cc \
 	unittest/AbcdeSchemeTest.cc \
+	unittest/AbcdeMultiCdSchemeTest.cc \
+	unittest/AbcdeMultiCdScheme2Test.cc \
 	unittest/GenericRipSchemeTest.cc \
 	unittest/MultiCdGenericRipSchemeTest.cc \
 	unittest/DefaultSchemeTest.cc

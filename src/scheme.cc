@@ -72,6 +72,41 @@ std::unique_ptr<Scheme> AbcdeScheme::create(std::string_view rootname) {
 	return {};
 }
 
+// AbcdeMultiCdScheme
+// "2-17.Atmosfear  Dancing in Outer Space-Atmosfear  Dancing in Outer Space.flac"
+std::unique_ptr<Scheme> AbcdeMultiCdScheme::create(std::string_view rootname) {
+	const auto strings = count_separators(rootname, ".", 1);
+	if (strings.size() == 2) {
+		const auto track = count_separators(strings[0], "-");
+		const auto parts = count_separators(strings[1], "-");
+		if (track.size() == 2 && parts.size() == 2 && parts[0] == parts[1]) {
+			const auto final_name = count_separators(parts[0], "  ");
+			if (final_name.size() == 2) {
+				return std::make_unique<AbcdeMultiCdScheme>(final_name[0], strings[0], final_name[1]);
+			}
+		}
+	}
+	return {};
+}
+
+// AbcdeMultiCdScheme2
+// 1-03.Chic  Good Times-Chic  Good Times.flac
+std::unique_ptr<Scheme> AbcdeMultiCdScheme2::create(std::string_view rootname) {
+	const auto strings = count_separators(rootname, ".", 1);
+	if (strings.size() == 2) {
+		auto expected_len = strings[1].size() / 2;
+		std::vector<std::string_view> part{
+				{ strings[1].data(), expected_len },
+				{ strings[1].data() + expected_len + 1, expected_len }
+			};
+		if (part[0] == part[1]) {
+			auto coded_name = count_separators(part[0], "–"); // node: not "-"
+			return std::make_unique<AbcdeMultiCdScheme2>(coded_name[0], strings[0], coded_name[1]);
+		}
+	}
+	return {};
+}
+
 // GenericRipScheme
 // 01 Temperature (Repack).mp3
 std::unique_ptr<Scheme> GenericRipScheme::create(std::string_view rootname) {
@@ -170,7 +205,7 @@ std::unique_ptr<Scheme> Scheme::create(std::string_view name) {
 		return p;
 	}
 	if (auto p = StudioScheme::create(rootname)) {
-		spdlog::info("{}: {}", "", rootname);
+		spdlog::info("{}: {}", "StudioScheme", rootname);
 		return p;
 	}
 	if (auto p = DefaultScheme::create(rootname)) {
@@ -179,6 +214,14 @@ std::unique_ptr<Scheme> Scheme::create(std::string_view name) {
 	}
 	if (auto p = AbcdeScheme::create(rootname)) {
 		spdlog::info("{}: {}", "AbcdeScheme", rootname);
+		return p;
+	}
+	if (auto p = AbcdeMultiCdScheme::create(rootname)) {
+		spdlog::info("{}: {}", "AbcdeMultiCdScheme", rootname);
+		return p;
+	}
+	if (auto p = AbcdeMultiCdScheme2::create(rootname)) {
+		spdlog::info("{}: {}", "AbcdeMultiCdScheme2", rootname);
 		return p;
 	}
 	if (auto p = GenericRipScheme::create(rootname)) {
